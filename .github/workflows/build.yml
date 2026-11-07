@@ -12,39 +12,17 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Set up Python
-      uses: actions/setup-python@v5
+    - name: Build with Buildozer
+      uses: kivy/buildozer-action@v0.4.0
       with:
-        python-version: '3.10'
-
-    - name: Install Dependencies
-      run: |
-        sudo dpkg --add-architecture i386
-        sudo apt-get update
-        sudo apt-get install -y \
-          build-format-algorithms ccache git libncurses5:i386 libstdc++6:i386 \
-          libz1:i386 zlib1g-dev openjdk-17-jdk unzip wget \
-          autoconf libtool pkg-config patch
-
-    - name: Install Python Build Tools
-      run: |
-        pip install --upgrade pip
-        pip install cython==0.29.36 buildozer
-
-    - name: Initialize Buildozer and Build
-      run: |
-        buildozer init
-        # تعديل الإعدادات تلقائياً في ملف buildozer.spec
-        sed -i 's/# title = My Application/title = ANSER Motivation/' buildozer.spec
-        sed -i 's/# package.name = myapp/package.name = anservation/' buildozer.spec
-        sed -i 's/# package.domain = org.test/package.domain = org.anser/' buildozer.spec
-        sed -i 's/requirements = python3,kivy/requirements = python3,kivy,kivymd,plyer,arabic-reshaper,python-bidi/' buildozer.spec
-        sed -i 's/# android.permissions =/android.permissions = VIBRATE, INTERNET, POST_NOTIFICATIONS/' buildozer.spec
-        sed -i 's/# android.api = 33/android.api = 33/' buildozer.spec
-        sed -i 's/# android.minapi = 21/android.minapi = 21/' buildozer.spec
-        
-        # تشغيل عملية البناء
-        buildozer -v android debug
+        command: |
+          buildozer init
+          sed -i 's/# title = My Application/title = ANSER Motivation/' buildozer.spec
+          sed -i 's/# package.name = myapp/package.name = anservation/' buildozer.spec
+          sed -i 's/# package.domain = org.test/package.domain = org.anser/' buildozer.spec
+          sed -i 's/requirements = python3,kivy/requirements = python3,kivy,kivymd,plyer,arabic-reshaper,python-bidi/' buildozer.spec
+          sed -i 's/# android.permissions =/android.permissions = VIBRATE, INTERNET, POST_NOTIFICATIONS/' buildozer.spec
+          buildozer -v android debug
 
     - name: Upload APK
       uses: actions/upload-artifact@v4
